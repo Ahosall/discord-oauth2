@@ -1,17 +1,10 @@
-const firebase = require('firebase')
+const mongoose = require('mongoose');
 
-const database = firebase.database()
+const UserSchema = new mongoose.Schema({
+	avatar: { type: String, required: true },
+	discordId: { type: String, required: true },
+	username: { type: String, required: true },
+	guilds: { type: Array, required: true }
+})
 
-const UserSchema = [];
-
-database.ref('/').once('value')
-  .then(async function(snap) {
-  	if (snap.val() != null) {
-        UserSchema.push({
-          user: await snap.val().user.id
-        })
-        console.log(UserSchema)
-  	}
-});
-
-const user = module.exports = UserSchema.user;
+const DiscordUser = module.exports = mongoose.model('User', UserSchema);

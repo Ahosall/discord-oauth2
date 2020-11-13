@@ -1,19 +1,17 @@
 const DiscordStrategy = require('passport-discord').Strategy;
 const passport = require('passport');
-const firebase = require('firebase');
 
 const DiscordUser = require('../models/DiscordUser');
 
-const database = firebase.database()
-
 passport.serializeUser((user, done) => {
-	console.log("Serializing User")
-	console.log(user)
-	done(null, user.discordId)
+	console.log("Serialize")
+	done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-	
+passport.deserializeUser(async (id, done) => {
+	console.log("Deserialize")
+	const user = await DiscordUser.findById(id);
+	if (user) { done(null, user) }
 });
 
 passport.use(new DiscordStrategy({
@@ -25,21 +23,22 @@ passport.use(new DiscordStrategy({
 
 }, async (accessToken, refreshToken, profile, done) => {
 	try	{
-		const user = await DiscordUser.find(user => user.discordId == profile.id);
+		const user = await DiscordUser.findOne({ discordId: profile.id });
 
-		console.log(user)
-		if (user) 
-			done(null, user);
-		else {
-			let id = Date.now().toString()
-			await database.ref(`/user/discordID/${id}`).set({ avatar: profile.avatar, discordId: profile.id, username: profile.username });
-			await database.ref(`/user/discordID/${id}`).once('value')
-			 .then(async function(snap) { 
-			 	let newUser = await snap.val()
-				console.log('→', newUser)
-				done(null, newUser);
+		if (user) {
+			console.log("User exist");
+			done(null, user);			
+		} else {
+			console.log("User does not exist");
+			const newuser = await DiscordUser.create({ 
+				avatar: profile.avatar, 
+				discordId: profile.id, 
+				username: profile.username,
+				guilds: profile.guilds
 			});
+			const savedUser = await newuser.save();
 
+			done(null, savedUser);
 		}
 	} 
 	catch(err) {

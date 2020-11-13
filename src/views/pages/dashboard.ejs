@@ -1,0 +1,41 @@
+<%- include('../partials/header') -%>
+	<center>
+		<div class="heading">
+		    <h1 class="display-5 title">Hello, <%= data.user.username %>.</h1>
+		    <p class="subtitle">Bot is a multi-purpose bot ready to skill up and boost up your Discord server<br />Also features auto-moderation, administration, music and much more!</p>
+		    <br /><br /><br /><br /><br /><br />
+		</div>
+	</center>
+	<div class="features">
+	    <div class="title">
+	    	Guilds
+	    </div>
+	    
+	    <div class="cards">
+	    	<% data.user.guilds.forEach(guild => { %>
+	    	<% if (guild.owner == true || guild.permissions == 2147483647) {%>
+	    	<article>
+	        	<div class="card mb-3" style="max-width: 700px;">
+	        		<div class="row no-gutters">
+		        		<div class="col-md-4">
+		        			<br>
+	        					<img class="rounded-circle" src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>" alt="<%= guild.name %>" width="200px" height="200px" style="max-width: none !important;">
+	        					<br>
+	        					<br>
+					    </div>
+				        <div class="col-md-8">
+				        	<div class="card-body">
+					            <h5 class="card-title"><%= guild.name %></h5>
+					            <p class="card-text">
+					            	<a class="btn btn-primary btn-lg" href="#start_link" role="button">Invite</a>
+					            	<a class="btn btn-primary btn-lg" href="#start_link" role="button">Configure</a>
+					            </p>
+				        	</div>
+				        </div>
+				    </div>
+		    	</div>
+	    	</article>
+        	<% } }) %>
+	    </div>
+	</div>
+<%- include('../partials/footer') -%>
